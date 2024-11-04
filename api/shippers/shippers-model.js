@@ -1,27 +1,39 @@
+db = require("../../data/db-config");
+
 module.exports = {
   get,
   getById,
   create,
   update,
   remove,
-}
+};
 
 async function get() {
-  return 'get wired'
+  // const result = db.raw("select * from shippers;");
+  const result = await db("shippers");
+  // .select("phone", "shippername");
+  return result;
 }
 
-async function getById() {
-  return 'getById wired'
+async function getById(id) {
+  const result = await db("shippers").where("shipperid", id).first();
+  return result;
 }
 
-async function create() {
-  return 'create wired'
+async function create(shipper) {
+  const [id] = await db("shippers").insert(shipper);
+  const result = await getById(id);
+  return result;
 }
 
-async function update() {
-  return 'update wired'
+async function update(id, changes) {
+  await db("shippers").update(changes).where("shipperid", id);
+  const result = await getById(id);
+  return result;
 }
 
-async function remove() {
-  return 'delete wired'
+async function remove(id) {
+  const deletedShipper = await getById(id);
+  await db("shippers").del().where("shipperid", id);
+  return deletedShipper;
 }
